@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MenuQR.ge — QR მენიუ რესტორნებისთვის</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1a472a;--green-light:#2d6a4f;--green-pale:#eaf3ee;
+  --gold:#c9a84c;--gold-light:#f0e0a0;
+  --bg:#ffffff;--bg2:#f8f9f6;--bg3:#f0f4ee;
+  --text:#1a1a1a;--muted:#666666;--border:#e0e0e0;
+  --r-card:12px;--r-btn:8px;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);--shadow-md:0 4px 16px rgba(0,0,0,0.12);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans Georgian',sans-serif;color:var(--text);background:var(--bg);min-height:100vh}
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+input,textarea,select{font-family:inherit;font-size:14px;border:1.5px solid var(--border);border-radius:var(--r-btn);padding:10px 14px;width:100%;outline:none;transition:border-color .2s;background:var(--bg);color:var(--text)}
+input:focus,textarea:focus{border-color:var(--green)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:var(--r-btn);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--green-light)}
+.btn-secondary{background:transparent;color:var(--green);border:2px solid var(--green)}
+.btn-secondary:hover{background:var(--green-pale)}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:#b8942f}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn-danger{background:#dc2626;color:#fff}
+.btn-danger:hover{background:#b91c1c}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--shadow)}
+
+/* ── LANDING ── */
+#page-home nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100}
+.logo{font-size:22px;font-weight:700;color:var(--green)}
+.logo span{color:var(--gold)}
+nav .nav-links{display:flex;gap:12px;align-items:center}
+.hero{text-align:center;padding:80px 24px 60px;background:var(--bg)}
+.hero-title{font-size:clamp(32px,5vw,56px);font-weight:700;color:var(--green);line-height:1.15;margin-bottom:14px}
+.hero-ka{font-size:clamp(16px,2.5vw,22px);color:var(--muted);margin-bottom:6px}
+.hero-en{font-size:clamp(13px,1.8vw,17px);color:var(--muted);margin-bottom:36px}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;padding:60px 40px;background:var(--bg2)}
+.feature-card{padding:32px 28px;border-radius:var(--r-card);background:var(--bg);border:1px solid var(--border);box-shadow:var(--shadow);text-align:center}
+.feature-icon{font-size:40px;margin-bottom:16px}
+.feature-card h3{font-size:17px;font-weight:700;color:var(--green);margin-bottom:10px}
+.feature-card p{font-size:14px;color:var(--muted);line-height:1.6}
+footer{text-align:center;padding:32px;background:var(--green);color:rgba(255,255,255,0.7);font-size:13px}
+footer a{color:var(--gold)}
+
+/* ── ADMIN ── */
+#page-admin{background:var(--bg2)}
+.admin-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--green);color:#fff;position:sticky;top:0;z-index:100}
+.admin-nav .logo{color:#fff}
+.admin-nav .logo span{color:var(--gold)}
+.admin-body{max-width:900px;margin:0 auto;padding:32px 20px}
+.section-title{font-size:20px;font-weight:700;color:var(--green);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.setup-card{padding:32px;margin-bottom:28px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.menu-editor{margin-bottom:28px}
+.cat-block{margin-bottom:16px;border-radius:var(--r-card);background:var(--bg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.cat-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--green-pale);border-bottom:1px solid var(--border)}
+.cat-name-input{flex:1;background:transparent;border:none;font-size:16px;font-weight:700;color:var(--green);padding:0;width:auto}
+.cat-name-input:focus{outline:none;border-bottom:2px solid var(--green)}
+.cat-items{padding:12px 16px}
+.item-row{display:grid;grid-template-columns:1fr 1fr 90px auto;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--border)}
+.item-row:last-child{border-bottom:none}
+.price-wrap{position:relative}
+.price-wrap input{padding-left:24px}
+.price-wrap::before{content:'₾';position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;z-index:1}
+.item-desc{grid-column:1/-2}
+.item-img-row{display:grid;grid-template-columns:1fr auto;gap:10px;grid-column:1/-1;align-items:center}
+.cat-footer{padding:10px 16px;background:var(--bg2);border-top:1px solid var(--border)}
+.qr-section{padding:32px;text-align:center}
+.qr-url{font-size:13px;color:var(--muted);word-break:break-all;margin:12px 0 20px;padding:12px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)}
+#qr-container{display:flex;justify-content:center;margin:20px 0}
+#qr-container canvas,#qr-container img{border-radius:8px;box-shadow:var(--shadow)}
+.qr-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+
+/* ── PUBLIC MENU ── */
+#page-menu{background:#fff}
+.menu-header{background:var(--green);color:#fff;padding:32px 24px;text-align:center}
+.menu-logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px;border:3px solid rgba(255,255,255,0.3)}
+.menu-rest-name{font-size:26px;font-weight:700;margin-bottom:6px}
+.menu-rest-desc{font-size:14px;opacity:.8;max-width:400px;margin:0 auto}
+.menu-tabs{position:sticky;top:0;background:#fff;border-bottom:2px solid var(--border);z-index:50;overflow-x:auto;white-space:nowrap;padding:0 16px;scrollbar-width:none}
+.menu-tabs::-webkit-scrollbar{display:none}
+.tab-pill{display:inline-block;padding:12px 18px;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;transition:all .2s;margin-right:4px}
+.tab-pill.active,.tab-pill:hover{color:var(--green);border-bottom-color:var(--green)}
+.menu-content{max-width:680px;margin:0 auto;padding:0 16px 80px}
+.cat-section{padding-top:32px}
+.cat-section-title{font-size:20px;font-weight:700;color:var(--green);padding-bottom:12px;border-bottom:2px solid var(--gold);margin-bottom:16px}
+.menu-item-card{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+.menu-item-card:last-child{border-bottom:none}
+.menu-item-img{width:80px;height:80px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.menu-item-info{flex:1;min-width:0}
+.menu-item-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.menu-item-desc{font-size:13px;color:var(--muted);line-height:1.5}
+.menu-item-price{font-size:17px;font-weight:700;color:var(--green);flex-shrink:0}
+.menu-footer{text-align:center;padding:20px;font-size:12px;color:var(--muted)}
+.menu-footer a{color:var(--green);font-weight:600}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#fff;padding:12px 24px;border-radius:50px;font-size:14px;font-weight:600;z-index:9999;transition:transform .3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  #page-home nav{padding:14px 18px}
+  .hero{padding:50px 18px 40px}
+  .features{padding:40px 18px;gap:16px}
+  .admin-body{padding:20px 14px}
+  .item-row{grid-template-columns:1fr auto;gap:8px}
+  .price-wrap{grid-column:1}
+  .admin-nav{padding:12px 18px}
+  .qr-section{padding:24px 18px}
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING PAGE -->
+<div id="page-home" class="page">
+  <nav>
+    <div class="logo">Menu<span>QR</span>.ge</div>
+    <div class="nav-links">
+      <a href="#admin" class="btn btn-secondary btn-sm" onclick="navigate('admin')">შექმენი მენიუ</a>
+    </div>
+  </nav>
+  <section class="hero">
+    <h1 class="hero-title">Menu<span style="color:var(--gold)">QR</span>.ge</h1>
+    <p class="hero-ka">შეცვალე ქაღალდის მენიუ QR კოდით — უფასოდ</p>
+    <p class="hero-en">Replace paper menus with a QR code — free</p>
+    <div class="hero-btns">
+      <a href="#admin" class="btn btn-primary" onclick="navigate('admin')">შექმენი მენიუ</a>
+      <a href="#menu" class="btn btn-secondary" onclick="loadDemoAndView()">იხილე მაგალითი</a>
+    </div>
+  </section>
+  <section class="features">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>QR კოდი წამში</h3>
+      <p>მენიუს შექმნისთანავე მიიღებ QR კოდს, რომელიც მაგიდაზე გამოიყენება.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✏️</div>
+      <h3>მენიუს რედაქტირება</h3>
+      <p>ნებისმიერ დროს შეცვალე ფასები და კერძები — ცვლილებები მომენტალურად გამოჩნდება.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎁</div>
+      <h3>უფასო სამუდამოდ</h3>
+      <p>ბაზისური პლანი სრულიად უფასოა. QR მენიუ ყველა ბიზნესისთვის ხელმისაწვდომი უნდა იყოს.</p>
+    </div>
+  </section>
+  <footer>
+    <p>© 2024 MenuQR.ge — ყველა უფლება დაცულია | <a href="#admin" onclick="navigate('admin')">ადმინ პანელი</a></p>
+  </footer>
+</div>
+
+<!-- ADMIN PAGE -->
+<div id="page-admin" class="page">
+  <nav class="admin-nav">
+    <div class="logo" style="cursor:pointer" onclick="navigate('home')">Menu<span>QR</span>.ge</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-gold btn-sm" onclick="navigate('menu')">👁 მენიუს ნახვა</button>
+      <button class="btn btn-secondary btn-sm" style="border-color:rgba(255,255,255,.4);color:#fff" onclick="navigate('home')">მთავარი</button>
+    </div>
+  </nav>
+  <div class="admin-body">
+    <!-- Setup -->
+    <div class="section-title">🏪 რესტორნის ინფორმაცია</div>
+    <div class="card setup-card">
+      <div class="form-group">
+        <label>რესტორნის სახელი *</label>
+        <input type="text" id="rest-name" placeholder="მაგ: კაფე ვარდი" oninput="autoSave()">
+      </div>
+      <div class="form-group">
+        <label>აღწერა (სურვილისამებრ)</label>
+        <textarea id="rest-desc" rows="2" placeholder="მოკლე აღწერა..." oninput="autoSave()"></textarea>
+      </div>
+      <div class="form-group">
+        <label>ლოგოს URL (სურვილისამებრ)</label>
+        <input type="url" id="rest-logo" placeholder="https://..." oninput="autoSave()">
+      </div>
+    </div>
+
+    <!-- Menu Editor -->
+    <div class="section-title">🍽 მენიუს რედაქტირება</div>
+    <div class="menu-editor" id="menu-editor"></div>
+    <button class="btn btn-primary" onclick="addCategory()" style="margin-bottom:32px">+ კატეგორიის დამატება</button>
+
+    <!-- QR Section -->
+    <div class="section-title">📱 QR კოდი</div>
+    <div class="card qr-section">
+      <p style="color:var(--muted);font-size:14px">სტუმრებს გაუზიარე ეს ლინკი ან QR კოდი:</p>
+      <div class="qr-url" id="menu-url-display">—</div>
+      <div id="qr-container"></div>
+      <div class="qr-btns">
+        <button class="btn btn-primary" onclick="downloadQR()">⬇ QR გადმოწერა</button>
+        <button class="btn btn-secondary" onclick="copyMenuUrl()">📋 ლინკის კოპირება</button>
+        <button class="btn btn-gold" onclick="navigate('menu')">👁 მენიუს ნახვა</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PUBLIC MENU PAGE -->
+<div id="page-menu" class="page">
+  <div class="menu-header" id="menu-header"></div>
+  <div class="menu-tabs" id="menu-tabs"></div>
+  <div class="menu-content" id="menu-content"></div>
+  <div class="menu-footer">
+    Powered by <a href="#home" onclick="navigate('home')">MenuQR.ge</a>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const DEMO_ID = 'demo-vardi';
+const DEMO = {
+  id: DEMO_ID,
+  name: 'კაფე ვარდი',
+  desc: 'ჩვენი კაფე გთავაზობთ ქართულ და ევროპულ სამზარეულოს',
+  logo: '',
+  categories: [
+    {id:'c1', name:'სალათები', items:[
+      {id:'i1',name:'ბაღის სალათი',desc:'სეზონური ბოსტნეული',price:8,img:''},
+      {id:'i2',name:'ბერძნული სალათი',desc:'ყველი, ზეთისხილი, პომიდორი',price:12,img:''},
+      {id:'i3',name:'სეზარი',desc:'ქათამი, კრუტონი, სპეციალური სოუსი',price:14,img:''}
+    ]},
+    {id:'c2', name:'მთავარი კერძები', items:[
+      {id:'i4',name:'ხინკალი (6 ც.)',desc:'ხელნაკეთი, ტრადიციული ქართული',price:9,img:''},
+      {id:'i5',name:'ხაჭაპური',desc:'ახალი პური და ყველი',price:11,img:''},
+      {id:'i6',name:'შაშლიკი',desc:'დანახშირზე შემწვარი ხორცი',price:18,img:''},
+      {id:'i7',name:'ჩახოხბილი',desc:'ქათამი ტომატის სოუსით',price:16,img:''}
+    ]},
+    {id:'c3', name:'სასმელები', items:[
+      {id:'i8',name:'ყავა',desc:'ესპრესო, ამერიკანო, ლათე',price:5,img:''},
+      {id:'i9',name:'ჩაი',desc:'მწვანე ან შავი',price:4,img:''},
+      {id:'i10',name:'ლიმონათი',desc:'ხელნაკეთი',price:6,img:''},
+      {id:'i11',name:'წყალი',desc:'0.5ლ',price:3,img:''}
+    ]},
+    {id:'c4', name:'დესერტი', items:[
+      {id:'i12',name:'ჩიზქეიქი',desc:'კლასიკური, მარწყვის სოუსით',price:10,img:''},
+      {id:'i13',name:'ბრაუნი',desc:'შოკოლადის, თბილი',price:8,img:''}
+    ]}
+  ]
+};
+
+function getRestaurant(id){
+  const d = localStorage.getItem('mqr_' + id);
+  return d ? JSON.parse(d) : null;
+}
+function saveRestaurant(r){
+  localStorage.setItem('mqr_' + r.id, JSON.stringify(r));
+}
+function getActiveId(){
+  return localStorage.getItem('mqr_active') || null;
+}
+function setActiveId(id){
+  localStorage.setItem('mqr_active', id);
+}
+function uid(){return 'x' + Math.random().toString(36).slice(2,9)}
+
+// Ensure demo data exists
+if(!getRestaurant(DEMO_ID)){
+  saveRestaurant(DEMO);
+}
+
+// ── ROUTING ──
+let currentPage = 'home';
+function navigate(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  currentPage = page;
+  window.location.hash = page;
+  if(page==='admin') initAdmin();
+  if(page==='menu') initMenu();
+  window.scrollTo(0,0);
+}
+function loadDemoAndView(){
+  setActiveId(DEMO_ID);
+  navigate('menu');
+}
+window.addEventListener('hashchange',()=>{
+  const h = window.location.hash.replace('#','');
+  if(['home','admin','menu'].includes(h)) navigate(h);
+});
+window.addEventListener('load',()=>{
+  const h = window.location.hash.replace('#','');
+  if(['home','admin','menu'].includes(h)) navigate(h);
+  else navigate('home');
+});
+
+// ── ADMIN ──
+let adminData = null;
+
+function initAdmin(){
+  let id = getActiveId();
+  if(!id){
+    id = uid();
+    setActiveId(id);
+    adminData = {id, name:'', desc:'', logo:'', categories:[]};
+    saveRestaurant(adminData);
+  } else {
+    adminData = getRestaurant(id) || {id, name:'', desc:'', logo:'', categories:[]};
+  }
+  document.getElementById('rest-name').value = adminData.name || '';
+  document.getElementById('rest-desc').value = adminData.desc || '';
+  document.getElementById('rest-logo').value = adminData.logo || '';
+  renderEditor();
+  updateQR();
+}
+
+function autoSave(){
+  if(!adminData) return;
+  adminData.name = document.getElementById('rest-name').value.trim();
+  adminData.desc = document.getElementById('rest-desc').value.trim();
+  adminData.logo = document.getElementById('rest-logo').value.trim();
+  saveRestaurant(adminData);
+  updateQR();
+}
+
+function renderEditor(){
+  const el = document.getElementById('menu-editor');
+  el.innerHTML = '';
+  (adminData.categories||[]).forEach(cat => {
+    el.appendChild(buildCatBlock(cat));
+  });
+}
+
+function buildCatBlock(cat){
+  const div = document.createElement('div');
+  div.className = 'cat-block';
+  div.id = 'cat-'+cat.id;
+
+  const header = document.createElement('div');
+  header.className = 'cat-header';
+  header.innerHTML = `
+    <input class="cat-name-input" type="text" placeholder="კატეგორიის სახელი" value="${escHtml(cat.name)}" oninput="updateCatName('${cat.id}',this.value)">
+    <button class="btn btn-danger btn-sm" onclick="deleteCategory('${cat.id}')">✕ წაშლა</button>`;
+  div.appendChild(header);
+
+  const items = document.createElement('div');
+  items.className = 'cat-items';
+  items.id = 'items-'+cat.id;
+  (cat.items||[]).forEach(item => items.appendChild(buildItemRow(cat.id, item)));
+  div.appendChild(items);
+
+  const footer = document.createElement('div');
+  footer.className = 'cat-footer';
+  footer.innerHTML = `<button class="btn btn-secondary btn-sm" onclick="addItem('${cat.id}')">+ კერძის დამატება</button>`;
+  div.appendChild(footer);
+  return div;
+}
+
+function buildItemRow(catId, item){
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.id = 'item-'+item.id;
+  row.innerHTML = `
+    <input type="text" placeholder="კერძის სახელი" value="${escHtml(item.name)}" oninput="updateItem('${catId}','${item.id}','name',this.value)">
+    <div class="price-wrap"><input type="number" placeholder="0" value="${item.price||''}" min="0" step="0.5" oninput="updateItem('${catId}','${item.id}','price',this.value)"></div>
+    <button class="btn btn-danger btn-sm" style="padding:8px 10px" onclick="deleteItem('${catId}','${item.id}')">✕</button>
+    <input type="text" placeholder="აღწერა (სურვილისამებრ)" value="${escHtml(item.desc||'')}" oninput="updateItem('${catId}','${item.id}','desc',this.value)" style="grid-column:1/3">
+    <input type="url" placeholder="სურათის URL (სურვილისამებრ)" value="${escHtml(item.img||'')}" oninput="updateItem('${catId}','${item.id}','img',this.value)" style="grid-column:1/-1">
+  `;
+  return row;
+}
+
+function addCategory(){
+  if(!adminData) return;
+  const cat = {id:uid(), name:'', items:[]};
+  adminData.categories.push(cat);
+  saveRestaurant(adminData);
+  const el = document.getElementById('menu-editor');
+  el.appendChild(buildCatBlock(cat));
+  showToast('კატეგორია დაემატა ✓');
+}
+
+function deleteCategory(catId){
+  if(!confirm('კატეგორია და ყველა კერძი წაიშლება. გინდა?')) return;
+  adminData.categories = adminData.categories.filter(c=>c.id!==catId);
+  saveRestaurant(adminData);
+  const el = document.getElementById('cat-'+catId);
+  if(el) el.remove();
+  showToast('კატეგორია წაიშალა');
+}
+
+function updateCatName(catId, val){
+  const cat = adminData.categories.find(c=>c.id===catId);
+  if(cat){cat.name=val; saveRestaurant(adminData);}
+}
+
+function addItem(catId){
+  const cat = adminData.categories.find(c=>c.id===catId);
+  if(!cat) return;
+  const item = {id:uid(), name:'', desc:'', price:'', img:''};
+  cat.items.push(item);
+  saveRestaurant(adminData);
+  const container = document.getElementById('items-'+catId);
+  if(container) container.appendChild(buildItemRow(catId, item));
+  showToast('კერძი დაემატა ✓');
+}
+
+function deleteItem(catId, itemId){
+  const cat = adminData.categories.find(c=>c.id===catId);
+  if(cat) cat.items = cat.items.filter(i=>i.id!==itemId);
+  saveRestaurant(adminData);
+  const el = document.getElementById('item-'+itemId);
+  if(el) el.remove();
+}
+
+function updateItem(catId, itemId, field, val){
+  const cat = adminData.categories.find(c=>c.id===catId);
+  if(!cat) return;
+  const item = cat.items.find(i=>i.id===itemId);
+  if(item){
+    item[field] = field==='price' ? (parseFloat(val)||0) : val;
+    saveRestaurant(adminData);
+  }
+}
+
+let qrInstance = null;
+function updateQR(){
+  if(!adminData) return;
+  const id = adminData.id;
+  const url = window.location.href.split('#')[0] + '#menu?id=' + id;
+  document.getElementById('menu-url-display').textContent = url;
+  const container = document.getElementById('qr-container');
+  container.innerHTML = '';
+  qrInstance = new QRCode(container, {
+    text: url,
+    width: 200,
+    height: 200,
+    colorDark:'#1a472a',
+    colorLight:'#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+}
+
+function downloadQR(){
+  const container = document.getElementById('qr-container');
+  const canvas = container.querySelector('canvas');
+  const img = container.querySelector('img');
+  if(canvas){
+    const a = document.createElement('a');
+    a.download = 'menuqr-' + (adminData.name||'menu') + '.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  } else if(img){
+    const a = document.createElement('a');
+    a.download = 'menuqr.png';
+    a.href = img.src;
+    a.click();
+  }
+  showToast('QR კოდი გადმოწერილია ✓');
+}
+
+function copyMenuUrl(){
+  const url = document.getElementById('menu-url-display').textContent;
+  navigator.clipboard.writeText(url).then(()=>showToast('ლინკი დაკოპირდა ✓')).catch(()=>{
+    const inp = document.createElement('input');
+    inp.value = url;
+    document.body.appendChild(inp);
+    inp.select();
+    document.execCommand('copy');
+    document.body.removeChild(inp);
+    showToast('ლინკი დაკოპირდა ✓');
+  });
+}
+
+// ── PUBLIC MENU ──
+function initMenu(){
+  let id = null;
+  const hash = window.location.hash;
+  const m = hash.match(/[?&]id=([^&]+)/);
+  if(m) id = m[1];
+  else id = getActiveId();
+
+  const rest = id ? getRestaurant(id) : null;
+  if(!rest){
+    document.getElementById('menu-header').innerHTML = '<h2 style="color:#fff;padding:20px">მენიუ ვერ მოიძებნა</h2>';
+    document.getElementById('menu-tabs').innerHTML = '';
+    document.getElementById('menu-content').innerHTML = '<p style="padding:40px;text-align:center;color:var(--muted)">QR კოდი არასწორია ან მენიუ წაიშალა.</p>';
+    return;
+  }
+
+  // Header
+  const h = document.getElementById('menu-header');
+  h.innerHTML = `
+    ${rest.logo ? `<img src="${escHtml(rest.logo)}" class="menu-logo" alt="logo" onerror="this.style.display='none'">` : ''}
+    <div class="menu-rest-name">${escHtml(rest.name||'რესტორანი')}</div>
+    ${rest.desc ? `<div class="menu-rest-desc">${escHtml(rest.desc)}</div>` : ''}
+  `;
+
+  // Tabs
+  const tabs = document.getElementById('menu-tabs');
+  tabs.innerHTML = (rest.categories||[]).map(cat=>`
+    <span class="tab-pill" onclick="scrollToSection('sec-${cat.id}')">${escHtml(cat.name)}</span>
+  `).join('');
+
+  // Content
+  const content = document.getElementById('menu-content');
+  content.innerHTML = (rest.categories||[]).map(cat=>`
+    <div class="cat-section" id="sec-${cat.id}">
+      <div class="cat-section-title">${escHtml(cat.name)}</div>
+      ${(cat.items||[]).map(item=>`
+        <div class="menu-item-card">
+          ${item.img ? `<img class="menu-item-img" src="${escHtml(item.img)}" alt="${escHtml(item.name)}" onerror="this.style.display='none'">` : ''}
+          <div class="menu-item-info">
+            <div class="menu-item-name">${escHtml(item.name)}</div>
+            ${item.desc ? `<div class="menu-item-desc">${escHtml(item.desc)}</div>` : ''}
+          </div>
+          <div class="menu-item-price">${item.price ? item.price+'₾' : ''}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  // Active tab on scroll
+  setupScrollSpy(rest.categories||[]);
+}
+
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function setupScrollSpy(cats){
+  const tabs = document.querySelectorAll('.tab-pill');
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const id = entry.target.id.replace('sec-','');
+        tabs.forEach(t=>t.classList.remove('active'));
+        const idx = cats.findIndex(c=>c.id===id);
+        if(tabs[idx]) tabs[idx].classList.add('active');
+      }
+    });
+  }, {rootMargin:'-30% 0px -60% 0px'});
+  cats.forEach(cat=>{
+    const el = document.getElementById('sec-'+cat.id);
+    if(el) observer.observe(el);
+  });
+  if(tabs[0]) tabs[0].classList.add('active');
+}
+
+// ── UTILS ──
+function escHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
